@@ -1,0 +1,79 @@
+{
+	"Jest it condition": {
+		"prefix": "jit",
+		"body": [
+			"it(`should return $1`, async() => {",
+			"\t//* Arrange",
+	  		"\t$2",
+			"\t//* Act",
+			"\t$3",
+			"\t//* Assert",
+			"\t$4",
+			"});"
+		]
+	},
+
+	"Describe jest": {
+		"prefix": "jdesc",
+		"body": [
+			"describe(`$1`, () => {",
+			"\tdescribe(`success`, () => {",
+			"\t});",
+			"\tdescribe(`failure`, () => {",
+			"\t});",
+			"});"
+		]
+	},
+
+	"Try catch" : {
+		"prefix": "tc",
+		"body": [
+			"try {",
+			"\t",
+			"} catch (err) {",
+			"\tlogger.error(`[$1] ${prettyJSON(err)} ${ err }`);",
+			"\t$2",
+			"}"
+		]
+	},
+
+	"Logger debug": {
+		"prefix": "ld",
+		"body": [
+			"logger.debug(`[$1][PREM-DEBUG] $2`);"
+		]
+	},
+
+  "Logger debug with json": {
+		"prefix": "ldj",
+		"body": [
+			"logger.debug(`[$1][PREM-DEBUG] $2:${prettyJSON($3)}`);"
+		]
+	},
+
+  "Logger error": {
+		"prefix": "le",
+		"body": [
+      "logger.error(`[$1] $2`);"
+		]
+	},
+
+  "Function scaffold": {
+    "prefix": "fn",
+    "body": [
+      "public async $1({",
+      "\t$4",
+      "}:{",
+      "\t$4",
+      "}){",
+      "\ttry{",
+      "\t\t",
+      "\t} catch (err) {",
+      "\t\tlogger.error(`[$2.$1] ${prettyJSON(err)} ${ err }`);",
+      "\t\treturn $3",
+      "\t}",
+      "}"
+    ]
+  }
+
+}
