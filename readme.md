@@ -43,7 +43,7 @@ Here's my nvim config & a small todo that I wish to complete some day lol.
 	- [ ] Quick navigate to the corresponding test file
 	- [ ] Nothing should get yanked to clipboard except for when i explicitly do 'y' or 'x'. when I paste, the block I pasted over gets copied into clipboard. shouldn't happen. 
 	- [ ] backspacing issue due to pair plugin
-	- [ ] the current block's signature at the very top like vscode
+	- [x] the current block's signature at the very top like vscode - solved via 'wellle/context.vim'
 	- [ ] live reloading of file
 	- [x] try claude code nvim 
 	- [ ] shortcut to get the cursor straight to the currently opened buffer in the nvim tree (for copy or smth)

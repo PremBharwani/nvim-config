@@ -108,6 +108,7 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'jbgutierrez/vim-better-comments'
   Plug 'folke/todo-comments.nvim'
 
+  Plug 'wellle/context.vim'
 
 call plug#end()
 "}}}
