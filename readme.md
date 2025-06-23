@@ -48,6 +48,7 @@ Here's my nvim config & a small todo that I wish to complete some day lol.
 	- [x] try claude code nvim 
 	- [ ] shortcut to get the cursor straight to the currently opened buffer in the nvim tree (for copy or smth)
 	    - [ ] currently focused file shows up in the nvim tree file explorer
+	- [ ] re-open to the files i left at
 
 
 # Credits
