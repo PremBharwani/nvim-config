@@ -69,10 +69,12 @@ call plug#begin('~/.config/nvim/plugged')
   " Nvim tree
   Plug 'nvim-tree/nvim-tree.lua'
   Plug 'nvim-tree/nvim-web-devicons'
-  Plug 'folke/tokyonight.nvim' "testing how i like it
 
   " Theme
   Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
+  Plug 'folke/tokyonight.nvim' "testing how i like it
+  Plug 'bluz71/vim-moonfly-colors', { 'as': 'moonfly' }
+
   Plug 'fei6409/log-highlight.nvim'                                               "Logs highlighting
 
   " CoC - Completion, LSP and more 
@@ -108,7 +110,7 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'jbgutierrez/vim-better-comments'
   Plug 'folke/todo-comments.nvim'
 
-  Plug 'wellle/context.vim'
+  " Plug 'wellle/context.vim' " Disabling since some of the context is still painted and doesn't go away.
 
 call plug#end()
 "}}}
@@ -123,7 +125,7 @@ call plug#end()
 " machhiato is a darkd one.
 " colorscheme catppuccin-latte "catppuccin, catppuccin-latte, catppuccin-frappe, catppuccin-macchiato, catppuccin-mocha
 " colorscheme tokyonight-night , tokyonight-day, tokyonight-moon, tokyonight-storm
-colorscheme tokyonight-night
+colorscheme moonfly
 
 " Edit vimrc
 """""""""""""
@@ -138,6 +140,7 @@ let g:auto_save = 1  " enable AutoSave on Vim startup
 " Buffer management
 """""""""""""
 nnoremap <silent> <Leader>q :Bdelete<CR>                                            " Close active buffer
+nnoremap <silent> <Leader><S-q> :Bdelete!<CR>                                       " Force Close active buffer (Closes unsaved buffers)
 nnoremap <silent> <Leader>bc :BufOnly<CR>                                           " Close all buffers except the current one - Uses custom method CloseAllButCurrentBdelete()
 nnoremap <silent> <leader>t :enew<CR>                                               " New empty buffer
 nnoremap <silent> <leader>i :echo expand("%:p")<CR>                                 " Show full path of current file 
@@ -565,7 +568,7 @@ let g:loaded_netrw = 1
 let g:loaded_netrwPlugin = 1
 
 
-nnoremap <silent> <C-n> :NvimTreeToggle<CR>
+" nnoremap <silent> <C-n> :NvimTreeToggle<CR> " Retiring in behalf of the focus file verion you can find in the lua part
 
 " Toggle terminal
 """""""""""""""""
@@ -577,6 +580,10 @@ tnoremap <buffer> <esc> <C-\><C-n>
 " Experimental
 """"""""""""""""
 nnoremap <leader><leader>, V:s/[,)]/&\r/g <cr>='<
+
+
+" Don't copy the selection I pasted over
+xnoremap p "_dP
 
 " Lua Snip - Snippets
 " press <Tab> to expand or jump in a snippet. These can also be mapped separately
@@ -619,6 +626,69 @@ endfunction
 " Map <leader>jc to run the function
 nnoremap <silent> <leader>jc :call JsonStringifyAndCopy()<CR>
 
+" RUN UNIT TESTS FOR THE CURRENTLY OPENED FILE 
+" --------------------------------------------
+
+" function! RunJestCoverage()
+"   let l:filename = expand('%')
+"   let l:cmd = 'npx jest ' . shellescape(l:filename) . ' --coverage'
+"   belowright split
+"   resize 10
+"   enew
+"   call termopen(l:cmd)
+"   startinsert
+" endfunction
+
+function! RunJestCoverage()
+  let l:filename = expand('%')
+  let l:cmd = 'npx jest ' . shellescape(l:filename) . ' --coverage'
+  let l:curwin = win_getid()
+  belowright split
+  resize 10
+  enew
+  call termopen(l:cmd)
+  call win_gotoid(l:curwin)
+endfunction
+
+nnoremap <leader>ut :call RunJestCoverage()<CR>
+" --------------------------------------------
+
+
+" Mark the comma sepeareted line ranges with some icon,
+" =====================================================
+" Define a sign for uncovered lines
+highlight CoverageWarning guifg=yellow ctermfg=yellow
+sign define CoverageSign text=◼ texthl=CoverageWarning
+" sign define CoverageSign text=◼ texthl=Error
+
+" Clear existing signs
+function! ClearCoverageSigns()
+  execute 'sign unplace * group=coverage'
+endfunction
+
+" Parse ranges and place signs
+function! HighlightUncovered(range_string)
+  call ClearCoverageSigns()
+  let ranges = split(a:range_string, ',')
+  for r in ranges
+    if r =~ '-'
+      let parts = split(r, '-')
+      let start = str2nr(parts[0])
+      let end = str2nr(parts[1])
+      for lnum in range(start, end)
+        execute 'sign place ' . lnum . ' line=' . lnum . ' name=CoverageSign group=coverage buffer=' . bufnr('%')
+      endfor
+    else
+      let lnum = str2nr(r)
+      execute 'sign place ' . lnum . ' line=' . lnum . ' name=CoverageSign group=coverage buffer=' . bufnr('%')
+    endif
+  endfor
+endfunction
+
+" Create a user command :HighlightUncovered
+command! -nargs=1 HighlightUncovered call HighlightUncovered(<f-args>)
+" ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+" =====================================================
 
 " Colorful coments using
 """""""""""""""""""""""""
@@ -637,6 +707,10 @@ augroup END
 " Lua part
 lua << EOF
 
+-- Nvim tree (config to focus on the file that was active when toggle was triggered)
+vim.keymap.set('n', '<C-n>', function()
+  require("nvim-tree.api").tree.toggle({ find_file = true, focus = true })
+end, { noremap = true, silent = true })
 
 -- Log file highlighting
 -- *********************
@@ -998,8 +1072,14 @@ require("luasnip.loaders.from_vscode").lazy_load({ paths = { "~/.config/nvim/cus
 
 
 -- Setup hardtime
-require("hardtime").setup()
-
+require("hardtime").setup({
+  disabled_keys = {
+    ["<Up>"] = false,
+    ["<Down>"] = false,
+    ["<Left>"] = false,
+    ["<Right>"] = false,
+  },
+})
 
 -- Setup todo-comments
 require("todo-comments").setup()
