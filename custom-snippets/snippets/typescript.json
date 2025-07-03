@@ -74,6 +74,47 @@
       "\t}",
       "}"
     ]
+  },
+
+  "Arrow function scaffold": {
+    "prefix": "afn",
+    "body": [
+      "$1 = async({",
+      "}) => {",
+      "}"
+    ]
+  },
+
+  "Jest fn (m)ock (r)esolved (v)alue (o)nce": {
+    "prefix": "mockres1",
+    "body": [
+      "$1 = jest.fn().mockResolvedValueOnce($2)"
+    ]
+  },
+
+  "Jest fn (m)ock (r)e(t)urn (v)alue (o)nce": {
+    "prefix": "mockret1",
+    "body": [
+      "$1 = jest.fn().mockReturnValueOnce($2)"
+    ]
+  },
+
+  "Jest fn should have been called nth time with": {
+    "prefix": "nthcalledwith",
+    "body": [
+      "expect($1).toHaveBeenNthCalledWith($2, $3)"
+    ]
+  },
+
+  "Jest fn to have been called times": {
+    "prefix": "calledtimes",
+    "body": [
+      "expect($1).toHaveBeenCalledTimes($2)"
+    ]
   }
+
+
+
+
 
 }
