@@ -37,6 +37,13 @@
 		]
 	},
 
+	"Logger info": {
+		"prefix": "li",
+		"body": [
+			"logger.info(`[$1] $2`);"
+		]
+	},
+
 	"Logger debug": {
 		"prefix": "ld",
 		"body": [
@@ -47,7 +54,7 @@
   "Logger debug with json": {
 		"prefix": "ldj",
 		"body": [
-			"logger.debug(`[$1][PREM-DEBUG] $2:${prettyJSON($3)}`);"
+			"logger.debug(`[$1][PREM-DEBUG] $2:${prettyJSON($2)}`);"
 		]
 	},
 

@@ -93,8 +93,8 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'sbdchd/neoformat'
 
   " Folding
-  Plug 'kevinhwang91/promise-async'
-  Plug 'kevinhwang91/nvim-ufo'
+  " Plug 'kevinhwang91/promise-async'
+  " Plug 'kevinhwang91/nvim-ufo'
 
   " Self plugin 
   Plug '~/.config/nvim/plugged/peepy' " Custom plugin I am writing
@@ -112,6 +112,12 @@ call plug#begin('~/.config/nvim/plugged')
 
   " Plug 'wellle/context.vim' " Disabling since some of the context is still painted and doesn't go away.
 
+  Plug 'kaarmu/typst.vim'
+
+  " Adds an indent guide line. Find 'igl' in the lua part for setup
+  " Plug 'lukas-reineke/indent-blankline.nvim'
+
+
 call plug#end()
 "}}}
 
@@ -125,7 +131,8 @@ call plug#end()
 " machhiato is a darkd one.
 " colorscheme catppuccin-latte "catppuccin, catppuccin-latte, catppuccin-frappe, catppuccin-macchiato, catppuccin-mocha
 " colorscheme tokyonight-night , tokyonight-day, tokyonight-moon, tokyonight-storm
-colorscheme moonfly
+" colorscheme moonfly
+colorscheme tokyonight-night 
 
 " Edit vimrc
 """""""""""""
@@ -152,7 +159,7 @@ function! CloseAllButCurrentBdelete()
   " Get a list of all listed buffers
   for buf in getbufinfo({'buflisted': 1})
     if buf.bufnr != current
-      execute 'Bdelete' buf.bufnr
+      execute 'Bdelete!' buf.bufnr
     endif
   endfor
 endfunction
@@ -163,10 +170,18 @@ command! BufOnly call CloseAllButCurrentBdelete()                               
 """""""""""""
 let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.6 } }
 "let g:fzf_files_options = '--preview bat --style=numbers --color=always --line-range :100 {}"'
+" FZF navigation with Ctrl-j/k
+let g:fzf_action = {
+  \ 'ctrl-t': 'tab split',
+  \ 'ctrl-x': 'split',
+  \ 'ctrl-v': 'vsplit' }
+
+" Enable Ctrl-j/k navigation in FZF
+let $FZF_DEFAULT_OPTS = '--bind ctrl-j:down,ctrl-k:up'
 
 nnoremap <silent> <leader>h :Files<CR>
 nnoremap <silent> <leader>g :GFiles?<CR> 
-"nnoremap <silent> <leader>b :Buffers<CR>
+nnoremap <silent> <leader>; :Buffers<CR>
 
 " Rg - Ripgrep 
 """"""""""""""
@@ -225,9 +240,20 @@ let g:lightline = {
       \ },
       \ 'component_function': {
       \   'gitbranch': 'FugitiveHead',
-      \   'method': 'NearestMethodOrFunction'
+      \   'method': 'NearestMethodOrFunction',
+      \   'filename': 'LightlineTruncatedFileName'
       \ },
       \ }
+
+" https://github.com/itchyny/lightline.vim/issues/532#issuecomment-745992513
+function! LightlineTruncatedFileName()
+let l:filePath = expand('%')
+    if winwidth(0) > 100
+        return l:filePath
+    else
+        return pathshorten(l:filePath)
+    endif
+endfunction
 
 " Always show the status line
 "
@@ -366,7 +392,7 @@ function! s:show_documentation()
         endif
 endfunction
 
-let g:coc_global_extensions = ['coc-stylelint', 'coc-tsserver', 'coc-docker', 'coc-vimlsp', 'coc-sh', 'coc-json']
+let g:coc_global_extensions = ['coc-tsserver', 'coc-docker', 'coc-vimlsp', 'coc-sh', 'coc-json']
 
 " Configure backspace so it acts as it should act
 "
@@ -575,7 +601,8 @@ let g:loaded_netrwPlugin = 1
 nnoremap <silent> <C-t> :ToggleTerm<CR>
 tnoremap <buffer> <esc> <C-\><C-n>
 
-
+" Terminal shortcut (leader + enter key to open :terminal)
+nnoremap <silent> <leader><CR> :terminal<CR>
 
 " Experimental
 """"""""""""""""
@@ -1013,9 +1040,9 @@ require("outline").setup({
 
 -- Key mappings for opening/closing folds
 -- ======================================
-vim.keymap.set('n', 'zR', require('ufo').openAllFolds)
-vim.keymap.set('n', 'zM', require('ufo').closeAllFolds)
-require('ufo').setup()
+-- vim.keymap.set('n', 'zR', require('ufo').openAllFolds)
+-- vim.keymap.set('n', 'zM', require('ufo').closeAllFolds)
+-- require('ufo').setup()
 
 
 --  Nvim Tree " Following is the way to configure lua in init.vim
@@ -1083,5 +1110,13 @@ require("hardtime").setup({
 
 -- Setup todo-comments
 require("todo-comments").setup()
+
+-- Setup indent guides
+-- ===================
+-- local hooks = require "ibl.hooks"
+-- require("ibl").setup()
+-- hooks.register(hooks.type.SCOPE_HIGHLIGHT, hooks.builtin.scope_highlight_from_extmark)
+
+
 
 EOF
