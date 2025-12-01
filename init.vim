@@ -603,6 +603,8 @@ tnoremap <buffer> <esc> <C-\><C-n>
 
 " Terminal shortcut (leader + enter key to open :terminal)
 nnoremap <silent> <leader><CR> :terminal<CR>
+" Move out of the terminal insert mode just by <C-\> (only when I am in insert mode in the terminal)
+tnoremap <silent> <C-\> <C-\><C-n>
 
 " Experimental
 """"""""""""""""
@@ -1050,6 +1052,9 @@ require("outline").setup({
 require("nvim-tree").setup({
   git = {
     ignore = false,
+  },
+  view = {
+    side = "right",
   }
 })
 
