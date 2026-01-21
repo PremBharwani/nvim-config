@@ -606,6 +606,15 @@ nnoremap <silent> <leader><CR> :terminal<CR>
 " Move out of the terminal insert mode just by <C-\> (only when I am in insert mode in the terminal)
 tnoremap <silent> <C-\> <C-\><C-n>
 
+" Claude Code Scratchpad keybindings (i3wm-style)
+"""""""""""""""""
+" <leader>cc - Toggle Claude scratchpad (show/hide)
+nnoremap <silent> <leader>cc :lua toggle_claude_scratchpad()<CR>
+tnoremap <silent> <leader>cc <C-\><C-n>:lua toggle_claude_scratchpad()<CR>
+" <leader>cs - Switch between floating and split mode
+nnoremap <silent> <leader>cs :lua toggle_claude_layout()<CR>
+tnoremap <silent> <leader>cs <C-\><C-n>:lua toggle_claude_layout()<CR>
+
 " Experimental
 """"""""""""""""
 nnoremap <leader><leader>, V:s/[,)]/&\r/g <cr>='<
@@ -1061,6 +1070,84 @@ require("nvim-tree").setup({
 -- Toggle Terminal
 -- """"""""""""""""
 require("toggleterm").setup()
+
+-- Claude Code Scratchpad (i3wm-style toggle)
+-- """"""""""""""""""""""""""""""""""""""""""""
+local Terminal = require('toggleterm.terminal').Terminal
+
+-- Debug logging function (optional - can be removed)
+local function log_debug(msg)
+  local log_file = io.open("/tmp/claude-scratchpad-debug.log", "a")
+  if log_file then
+    log_file:write(os.date("%Y-%m-%d %H:%M:%S") .. " - " .. msg .. "\n")
+    log_file:close()
+  end
+end
+
+log_debug("=== Claude Scratchpad Init ===")
+
+-- Calculate window dimensions (90% of screen)
+local width = math.floor(vim.o.columns * 0.9)
+local height = math.floor(vim.o.lines * 0.9)
+
+log_debug("Screen dimensions - columns: " .. vim.o.columns .. ", lines: " .. vim.o.lines)
+log_debug("Float dimensions - width: " .. width .. ", height: " .. height)
+
+-- Create a dedicated terminal for Claude Code
+local claude_term = Terminal:new({
+  cmd = "bash",  -- You can change this to "claude code" to auto-start
+  direction = "float",
+  hidden = true,
+  float_opts = {
+    border = "curved",
+    width = width,
+    height = height,
+  },
+  on_open = function(term)
+    log_debug("Claude terminal opened - buf: " .. term.bufnr .. ", win: " .. term.window)
+    vim.cmd("startinsert!")
+  end,
+  on_close = function(term)
+    log_debug("Claude terminal closed")
+  end,
+})
+
+-- Function to toggle Claude Code scratchpad
+_G.toggle_claude_scratchpad = function()
+  log_debug("Toggle called - is_open: " .. tostring(claude_term:is_open()))
+  claude_term:toggle()
+  if claude_term:is_open() then
+    log_debug("Scratchpad is now open")
+  else
+    log_debug("Scratchpad is now closed")
+  end
+end
+
+-- Function to switch between float and split mode
+_G.toggle_claude_layout = function()
+  local old_direction = claude_term.direction
+
+  if claude_term.direction == "float" then
+    claude_term.direction = "horizontal"
+    claude_term.display_name = "Claude Code (Split)"
+    log_debug("Switching from float to horizontal split")
+  else
+    claude_term.direction = "float"
+    claude_term.display_name = "Claude Code (Float)"
+    log_debug("Switching from " .. old_direction .. " to float")
+  end
+
+  -- Reopen to apply new direction if currently open
+  if claude_term:is_open() then
+    log_debug("Terminal is open, closing and reopening with new direction")
+    claude_term:close()
+    claude_term:open()
+  else
+    log_debug("Terminal is closed, direction changed for next open")
+  end
+end
+
+log_debug("Claude Scratchpad functions registered")
 
 -- Claude code 
 -- """"""""""""
