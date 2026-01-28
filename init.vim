@@ -37,6 +37,7 @@ call plug#begin('~/.config/nvim/plugged')
 
   " VCS Related
   Plug 'tpope/vim-fugitive'                                                       " Best Git integration
+  Plug 'tpope/vim-rhubarb'                                                        " Opens github urls (:GBrowse command on fugitive git blame)
   Plug 'airblade/vim-gitgutter'                                                   " Show git changes in the gutter
 
   " Manipulation
@@ -117,6 +118,11 @@ call plug#begin('~/.config/nvim/plugged')
   " Adds an indent guide line. Find 'igl' in the lua part for setup
   " Plug 'lukas-reineke/indent-blankline.nvim'
 
+  " Renders the markdown
+  Plug 'MeanderingProgrammer/render-markdown.nvim'
+  
+  " scratchpad
+  Plug 'PremBharwani/scratchpad'
 
 call plug#end()
 "}}}
@@ -374,6 +380,8 @@ nmap <silent> gr <Plug>(coc-references)
 nmap <silent> gR <Plug>(coc-rename)
 nmap <silent> [w <Plug>(coc-diagnostic-prev)
 nmap <silent> ]w <Plug>(coc-diagnostic-next)
+nnoremap <silent> gp :call CocAction('definitionHover')<CR>
+
 
 " Navigate suggestions
 inoremap <expr> <C-j> pumvisible() ? "\<C-n>" : "\<C-j>"
@@ -607,7 +615,7 @@ nnoremap <silent> <leader><CR> :terminal<CR>
 tnoremap <silent> <C-\> <C-\><C-n>
 
 " Experimental
-""""""""""""""""
+""""""""""""""
 nnoremap <leader><leader>, V:s/[,)]/&\r/g <cr>='<
 
 
@@ -1123,5 +1131,11 @@ require("todo-comments").setup()
 -- hooks.register(hooks.type.SCOPE_HIGHLIGHT, hooks.builtin.scope_highlight_from_extmark)
 
 
+-- Setup scratchpad
+require("scratchpad").setup()
 
 EOF
+
+
+" Allow mouse (trying to scroll on the preview opened - but some other plugin is overwriting it)
+set mouse=a
