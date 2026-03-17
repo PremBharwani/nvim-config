@@ -159,17 +159,24 @@ nnoremap <silent> <leader>t :enew<CR>                                           
 nnoremap <silent> <leader>i :echo expand("%:p")<CR>                                 " Show full path of current file 
 
 
-" Close all buffers except the current one using Bdelete
-function! CloseAllButCurrentBdelete() 
-  let current = bufnr('%')
-  " Get a list of all listed buffers
+" Close all buffers except those visible in windows using Bdelete
+function! CloseAllButVisibleBdelete()
+  " Collect all buffer numbers currently visible in any window
+  let visible_bufs = []
+  for win in getwininfo()
+    if index(visible_bufs, win.bufnr) == -1
+      call add(visible_bufs, win.bufnr)
+    endif
+  endfor
+
+  " Close all listed buffers that are not visible
   for buf in getbufinfo({'buflisted': 1})
-    if buf.bufnr != current
+    if index(visible_bufs, buf.bufnr) == -1
       execute 'Bdelete!' buf.bufnr
     endif
   endfor
 endfunction
-command! BufOnly call CloseAllButCurrentBdelete()                                   " Alias for CloseAllButCurrentBdelete() 
+command! BufOnly call CloseAllButVisibleBdelete()                                   " Alias for CloseAllButVisibleBdelete() 
 
 
 " FZF
