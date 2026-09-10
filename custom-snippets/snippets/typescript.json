@@ -44,10 +44,24 @@
 		]
 	},
 
+	"Logger info for class method": {
+		"prefix": "lim",
+		"body": [
+			"logger.info(`[${this.CLASS_NAME}.\\${METHOD_NAME}] $1`);"
+		]
+	},
+
 	"Logger debug": {
 		"prefix": "ld",
 		"body": [
 			"logger.debug(`[$1][PREM-DEBUG] $2`);"
+		]
+	},
+
+	"Literal helper": {
+		"prefix": "lh",
+		"body": [
+			"$1 = \\${$1}"
 		]
 	},
 
@@ -65,19 +79,28 @@
 		]
 	},
 
+	"Logger error for class method": {
+		"prefix": "lem",
+		"body": [
+			"logger.error(`[${this.CLASS_NAME}.\\${METHOD_NAME}] $1`);"
+		]
+	},
+
   "Function scaffold": {
     "prefix": "fn",
     "body": [
       "public async $1({",
-      "\t$4",
+      "\t$2",
       "}:{",
-      "\t$4",
+      "\t$2",
       "}){",
+      "\tconst METHOD_NAME='$1';",
+      "\tconst identifier=`$3`;",
       "\ttry{",
       "\t\t",
       "\t} catch (err) {",
-      "\t\tlogger.error(`[$2.$1] ${prettyJSON(err)} ${ err }`);",
-      "\t\treturn $3",
+      "\t\tlogger.error(`[${this.CLASS_NAME}.\\${METHOD_NAME}] (\\${identifier}) ${prettyJSON(err)} ${ err }`);",
+      "\t\treturn createFailureResponse(500, INTERNAL_SERVER_ERROR);",
       "\t}",
       "}"
     ]
